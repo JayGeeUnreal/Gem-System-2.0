@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OBS Chat Overlay</title>
+    <style>
+        /* CSS Variables for column widths. You can adjust these in OBS via custom CSS if needed. */
+        :root { 
+            --col-platform: 60px; 
+            --col-source: 100px; 
+            --col-user: 120px; 
+            --col-time: 85px; 
+            --col-spacer: 0px; 
+        }
+
+        /* --- CORE STYLES FROM MANAGER --- */
+        body { 
+            margin: 0; 
+            padding: 10px; 
+            background-color: transparent; /* TRANSPARENT FOR OBS */
+            font-family: 'Segoe UI', sans-serif; 
+            overflow: hidden;
+        }
+
+        #chat-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 80%;
+            max-height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        /* --- STYLING FOR EACH CHAT MESSAGE --- */
+        .chat-entry {
+            background: rgba(30, 30, 30, 0.8); /* Dark, semi-transparent background */
+            border: 1px solid #333;
+            border-radius: 4px;
+            display: grid;
+            grid-template-columns: var(--col-platform) var(--col-source) var(--col-user) 1fr var(--col-time) var(--col-spacer);
+            gap: 10px;
+            padding: 8px;
+            align-items: center;
+            animation: fadeIn 0.4s ease-out;
+            margin-right: 10px; /* Spacing from edge */
+        }
+        
+        .chat-entry.exiting {
+            animation: fadeOut 0.4s ease-out forwards;
+        }
+
+        .platform-icon { 
+            font-size: 10px; 
+            padding: 3px 6px; 
+            border-radius: 3px; 
+            background: #444; 
+            color: #ccc; 
+            width: 100%; 
+            text-align: center; 
+            text-transform: uppercase;
+        }
+        
+        .source-tag { 
+            display: block; 
+            font-size: 11px; 
+            color: #999; 
+            background: #2d2d30; 
+            border: 1px solid #444; 
+            padding: 2px 6px; 
+            border-radius: 4px; 
+            white-space: nowrap; 
+            overflow: hidden; 
+            text-overflow: ellipsis; 
+            text-align: center; 
+        }
+
+        .col-user { 
+            display: flex; 
+            align-items: center; 
+            gap: 6px; 
+            overflow: hidden; 
+            color: #eebb00; 
+            font-weight: bold; 
+        }
+        
+        .avatar-img { 
+            width: 24px; 
+            height: 24px; 
+            border-radius: 50%; 
+            object-fit: cover; 
+            border: 1px solid #555; 
+            flex-shrink: 0; 
+            background: #555; /* Fallback for no avatar */
+        }
+        
+        .username-text { 
+            white-space: nowrap; 
+            overflow: hidden; 
+            text-overflow: ellipsis; 
+        }
+
+        .col-message { 
+            color: #ddd; 
+            word-break: break-word; 
+            font-size: 15px; 
+            line-height: 1.4; 
+            text-shadow: 1px 1px 2px black; /* Shadow for readability on stream */
+        }
+        
+        .col-message img { 
+            max-height: 24px !important; 
+            vertical-align: middle; 
+        }
+
+        .col-time { 
+            font-size: 0.8em; 
+            color: #888; 
+            text-align: right; 
+            white-space: nowrap; 
+        }
+
+        .badge-icon { 
+            width: 16px; 
+            height: 16px; 
+            flex-shrink: 0; 
+        }
+        
+        .mod-spanner { 
+            fill: #5e81ac; 
+            background: #252526; 
+            border-radius: 2px; 
+            padding: 1px; 
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; transform: scale(1); }
+            to { opacity: 0; transform: scale(0.9); }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="chat-container">
+        <!-- New messages will appear here smoothly -->
+    </div>
+
+    <!-- Mod Icon SVG (hidden, for template use) -->
+    <div style="display:none;">
+        <svg id="icon-spanner" viewBox="0 0 512 512"><path d="M501.1 395.7L384 278.6c-1.6-1.6-3.8-2.5-6.1-2.5h-5.8c12.2-31.9 12.5-67.4-2.1-100.8-21.7-49.8-71.1-81.8-125.6-81.8-12.8 0-25.5 1.8-37.8 5.4l59.6 59.6c6.2 6.2 6.2 16.4 0 22.6l-22.6 22.6c-6.2 6.2-16.4 6.2-22.6 0l-59.6-59.6C125.3 162 122 181.7 132.8 206.3c15 34.1 46.4 61.2 82.5 73.1v5.8c0 2.3.9 4.5 2.5 6.1l117.1 117.1c9.4 9.4 24.6 9.4 33.9 0l132.3-132.3c9.4-9.4 9.4-24.6 0-33.9zm-460.6-21.3l127.6-39.7c5.8-1.8 9.1-8.1 7.2-13.9L135.6 205c-1.8-5.8-8.1-9.1-13.9-7.2L34.1 237.5c-20 6.2-28.5 28.7-16.5 45.2l37.2 51.3-51.3 37.2C-8.5 383.2 0 405.7 20 411.9l115.8 36c5.8 1.8 12.1-1.5 13.9-7.2l30.3-115.8c1.8-5.8-1.5-12.1-7.2-13.9l-115.8-30.3c-5.8-1.8-9.1-8.1-7.2-13.9l39.7-127.6z"/></svg>
+    </div>
+
+<script>
+    const MAX_MESSAGES = 20; // How many messages to keep on screen
+    const displayedMessages = new Set();
+    let lastMessageHash = "";
+
+    // HELPER FUNCTION: Renders badges for a user (copied from manager script)
+    function renderBadges(msg) {
+        let html = '';
+        const badges = msg.chatbadges || [];
+        const isMod = msg.mod || msg.moderator || (msg.tags && msg.tags.mod === '1') || (badges.some(b => b.type === 'moderator'));
+        
+        if (isMod) {
+            const svg = document.getElementById('icon-spanner').innerHTML;
+            html += `<svg class="badge-icon mod-spanner" viewBox="0 0 512 512">${svg}</svg>`;
+        }
+        
+        badges.forEach(b => {
+            if(b.src) html += `<img src="${b.src}" class="badge-icon">`;
+        });
+        
+        return html;
+    }
+
+    // MAIN RENDER FUNCTION: Creates and removes messages smoothly
+    function renderMessages(msgs) {
+        const container = document.getElementById('chat-container');
+        
+        // API returns newest first, so we reverse to process oldest new message first
+        const reversedMsgs = msgs.slice(0, MAX_MESSAGES).reverse();
+        
+        reversedMsgs.forEach(m => {
+            const msgId = `${m.timestamp || Date.now()}-${m.user}-${m.message}`;
+            if (displayedMessages.has(msgId)) return; // Already on screen, skip
+            
+            displayedMessages.add(msgId);
+
+            // --- Create the new chat entry element ---
+            const chatEntry = document.createElement('div');
+            chatEntry.className = 'chat-entry';
+            chatEntry.setAttribute('data-message-id', msgId);
+
+            // --- Prepare data for rendering ---
+            const time = m.timestamp ? new Date(parseInt(m.timestamp)).toLocaleTimeString() : '';
+            const source = m.sourceName ? `<span class="source-tag" title="${m.sourceName}">${m.sourceName}</span>` : '';
+            const avatar = m.chatimg ? `<img src="${m.chatimg}" class="avatar-img">` : `<div class="avatar-img"></div>`;
+            const user = m.chatname || m.user || 'Anon';
+            const msgText = m.message || m.chatmessage || '';
+            const platform = m.type || 'UNK';
+            
+            // --- Set the innerHTML using the manager's format ---
+            chatEntry.innerHTML = `
+                <div class="col-platform"><span class="platform-icon">${platform}</span></div>
+                <div class="col-source">${source}</div>
+                <div class="col-user">${avatar}<span class="username-text" title="${user}">${user}</span>${renderBadges(m)}</div>
+                <div class="col-message">${msgText}</div>
+                <div class="col-time">${time}</div>
+                <div class="col-spacer"></div>
+            `;
+            
+            container.appendChild(chatEntry);
+        });
+
+        // --- Remove old messages if we are over the limit ---
+        while (container.children.length > MAX_MESSAGES) {
+            const oldMessage = container.firstChild;
+            const oldMessageId = oldMessage.getAttribute('data-message-id');
+            displayedMessages.delete(oldMessageId);
+            
+            oldMessage.classList.add('exiting');
+            setTimeout(() => { oldMessage.remove(); }, 400); // Match animation duration
+        }
+    }
+
+    // --- FETCH LOOP ---
+    async function fetchChat() {
+        try {
+            const res = await fetch('/api/live');
+            const d = await res.json();
+            const currentHash = JSON.stringify(d.messages);
+
+            // Only update the DOM if the messages have actually changed
+            if (currentHash !== lastMessageHash) {
+                renderMessages(d.messages);
+                lastMessageHash = currentHash;
+            }
+        } catch(e) {}
+    }
+
+    // --- START THE PROCESS ---
+    setInterval(fetchChat, 1000); // Refresh every second
+    fetchChat(); // Initial fetch
+</script>
+</body>
+</html>
