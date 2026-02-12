@@ -1,3 +1,5 @@
+Dont use for now. For some reason its broken at the moment.
+
 Whats new :
 
 It is now using full async code using Quart
