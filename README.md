@@ -1,6 +1,6 @@
 Whats new :
 
-It is now using full async code using Quartz
+It is now using full async code using Quart
 
 Optimized the main MCP server. The execution of a full cycle is now about 56% faster. Cant make it much faster. Most of the execution time is spent waiting for the LLM...
 
