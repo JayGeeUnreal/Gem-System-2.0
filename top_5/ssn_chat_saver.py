@@ -661,4 +661,4 @@ if __name__ == '__main__':
         print(f"[{ts}] --- Server Starting ---")
         print(f"[{ts}] Saving mention clips to folder: ./{MENTIONS_LOG_DIR}/")
     
-    app.run(host='127.0.0.1', port=5000, debug=True)
+    app.run(host='127.0.0.1', port=14300, debug=True)
