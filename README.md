@@ -1,5 +1,5 @@
 # &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Installation <br>
-For most of the development and testing im using my laptop that have an Nvidia 3050 with 4Gb of vram.<br> And i do this so that most people can be able to run it.<br> Now to be fair you wont be able to run any big LLM´s BUT im defaulting to be using Gemini anyway,<br> hence the name of the project....
+For most of the development and testing im using my laptop that have an Nvidia 3050 with 4Gb of vram.<br> And i do this so that most people will be able to run it.<br> Now to be fair you wont be able to run any big LLM´s BUT im defaulting to be using Gemini anyway,<br> hence the name of the project....
 Now, for my setup i´m using <br>
 Anaconda3_Py3_13-2025.06-0-Windows-x86_64.exe<br>
 Voicemeter - https://vb-audio.com/Voicemeeter/banana.htm<br>
