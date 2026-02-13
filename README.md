@@ -21,28 +21,48 @@ and some more...
 Installation
 
 Now, for my setup i´m using 
+
 Anaconda3_Py3_13-2025.06-0-Windows-x86_64.exe
+
 Voicemeter - https://vb-audio.com/Voicemeeter/banana.htm
+
 *Voicemeter Banana is not needed for basic usage, but needed for all functions to work.
 
 Ports used :
+
 MCP			5000
+
 Chat Interceptor	8889
+
 StyleTTS2		13300/tts
+
 LuxTTS		13300/tts
+
 Server ??		5050
+
 OSC(In Unreal)	10000/chat/message
+
 Vision Service		5001/sca
+
 			5001/get_image
 NeurosyncLocalAPI	9000
+
 	End point	5000
+	
 Watcher/Neurosync	11111(Send to Unreal Engine)
+
 Listen (Ears)		5000 (sends to)
+
 Chat Interceptor	14300 (ssn_chat_saver.py)
+
 			ssn_chat_saver.py:360:@app.route('/api/live', methods=['GET'])
+			
 			ssn_chat_saver_inject.py:518:@app.route('/api/live', methods=['GET'])
+			
 Install Social Stream Ninja
+
 Cuda Toolkit - https://developer.nvidia.com/cuda-downloads
+
 ________________________________________________________________________________
 Make a folder for example 
 C:\Users\jorge\Documents\AI\Gem_2_0
