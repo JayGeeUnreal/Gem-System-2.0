@@ -1,4 +1,5 @@
 # &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Installation <br>
+For most of the development and testing im using my laptop that have an Nvidia 3050 with 4Gb of vram.<br> And i do this so that most people cn be able to run it.<br> 
 Now, for my setup i´m using <br>
 Anaconda3_Py3_13-2025.06-0-Windows-x86_64.exe<br>
 Voicemeter - https://vb-audio.com/Voicemeeter/banana.htm<br>
@@ -15,7 +16,7 @@ Vision Service		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5001/sca<b
 			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5001/get_image<br>
 NeurosyncLocalAPI	9000<br>
 	End point	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5000<br>
-Watcher/Neurosync	11111(Send to Unreal Engine or any software that supports Livelink)<br>
+Watcher/Neurosync	11111(Send to Unreal Engine)<br>
 Listen (Ears)		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5000 (sends to)<br>
 Chat Interceptor	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;14300 (ssn_chat_saver.py)<br>
 			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ssn_chat_saver.py:360:@app.route('/api/live', methods=['GET'])<br>
@@ -33,8 +34,8 @@ Go into Gem-AI-System-2.0
 
 Start an Anaconda Prompt
 
-Run (example)<br>
-conda create --name mcp_env_1 python=3.10 -y<br>
+Run (example)
+conda create --name mcp_env_1 python=3.10 -y
 conda activate  mcp_env_1<br>
 Cd into (Example)
 C:\Users\jorge\Documents\AI\Gem_2_0\Gem-AI-System-2.0
