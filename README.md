@@ -1,68 +1,27 @@
-Whats new :
+# &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Installation <br>
+Now, for my setup i´m using <br>
+Anaconda3_Py3_13-2025.06-0-Windows-x86_64.exe<br>
+Voicemeter - https://vb-audio.com/Voicemeeter/banana.htm<br>
+*Voicemeter Banana is not needed for basic usage, but needed for all functions to work.<br>
 
-It is now using full async code using Quart
-
-Optimized the main MCP server. The execution of a full cycle is now about 56% faster. Cant make it much faster. Most of the execution time is spent waiting for the LLM...
-
-Added LuxTTS
-
-Added A chat logger (Under Extras)
-
-Added Top Chatters (Located in the Chat Logger app)
-
-Added Top mentions (Located in the Chat Logger app)
-
-Added Transcription of videos/sound files (Located in the Chat Logger app)
-
-Added Possibility to run your own custom scripts
-
-and some more...
-
-Installation
-
-Now, for my setup i´m using 
-
-Anaconda3_Py3_13-2025.06-0-Windows-x86_64.exe
-
-Voicemeter - https://vb-audio.com/Voicemeeter/banana.htm
-
-*Voicemeter Banana is not needed for basic usage, but needed for all functions to work.
-
-Ports used :
-
-MCP			5000
-
-Chat Interceptor	8889
-
-StyleTTS2		13300/tts
-
-LuxTTS		13300/tts
-
-Server ??		5050
-
-OSC(In Unreal)	10000/chat/message
-
-Vision Service		5001/sca
-
-			5001/get_image
-NeurosyncLocalAPI	9000
-
-	End point	5000
-	
-Watcher/Neurosync	11111(Send to Unreal Engine)
-
-Listen (Ears)		5000 (sends to)
-
-Chat Interceptor	14300 (ssn_chat_saver.py)
-
-			ssn_chat_saver.py:360:@app.route('/api/live', methods=['GET'])
-			
-			ssn_chat_saver_inject.py:518:@app.route('/api/live', methods=['GET'])
-			
-Install Social Stream Ninja
-
-Cuda Toolkit - https://developer.nvidia.com/cuda-downloads
-
+Ports used :<br>
+MCP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5000<br>
+Chat Interceptor	&nbsp;&nbsp;&nbsp;&nbsp;8889<br>
+StyleTTS2		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;13300/tts<br>
+LuxTTS		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;13300/tts<br>
+Server ??		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5050<br>
+OSC(In Unreal)	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;10000/chat/message<br>
+Vision Service		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5001/sca<br>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5001/get_image<br>
+NeurosyncLocalAPI	9000<br>
+	End point	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5000<br>
+Watcher/Neurosync	11111(Send to Unreal Engine)<br>
+Listen (Ears)		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5000 (sends to)<br>
+Chat Interceptor	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;14300 (ssn_chat_saver.py)<br>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ssn_chat_saver.py:360:@app.route('/api/live', methods=['GET'])<br>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ssn_chat_saver_inject.py:518:@app.route('/api/live', methods=['GET'])<br>
+Install Social Stream Ninja<br>
+Cuda Toolkit - https://developer.nvidia.com/cuda-downloads<br>
 ________________________________________________________________________________
 Make a folder for example 
 C:\Users\jorge\Documents\AI\Gem_2_0
