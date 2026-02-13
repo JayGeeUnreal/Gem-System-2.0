@@ -19,6 +19,7 @@ Added Possibility to run your own custom scripts
 and some more...
 
 Installation
+
 Now, for my setup i´m using 
 Anaconda3_Py3_13-2025.06-0-Windows-x86_64.exe
 Voicemeter - https://vb-audio.com/Voicemeeter/banana.htm
