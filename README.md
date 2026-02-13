@@ -72,6 +72,6 @@ app.py
 LuxTTS<br>
 To get GPU acceleration you need to run the following<br>
 Make sure PyTorch version matches the CUDA version <br>installed on your system<br>
-    1. conda install cudatoolkit cudnn -c <br>conda-forge -y<br>
+    1. conda install cudatoolkit cudnn -c conda-forge -y<br>
     2. conda install -c pytorch pytorch<br>
-    3. pip install git+https://github.com/k2-fsa/k2
+    3. pip install git+https://github.com/k2-fsa/k2<br>
