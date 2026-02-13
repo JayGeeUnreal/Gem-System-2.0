@@ -13,9 +13,7 @@ import numpy as np
 import torch
 
 # --- 1. Dynamic Path Resolution ---
-# This script is in: .../Gem-System/LuxTTS
 SCRIPT_DIR = Path(__file__).resolve().parent
-# Parent is: .../Gem-System
 PARENT_DIR = SCRIPT_DIR.parent
 
 # Path to your settings file

@@ -29,7 +29,6 @@ from utils.emote_sender.send_emote import EmoteConnect
 # --- Configuration ---
 ENABLE_EMOTE_CALLS = False
 
-# --- NEW: Robust, portable method to find the project root ---
 def find_project_root(marker_file='.project_root'):
     print("\n--- Starting Root Discovery ---")
     try:
