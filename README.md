@@ -50,9 +50,10 @@ or<br>
 conda env create -f mcp_env_1.yml<br>
 
 
-Neurosync (Used for making Blenshapes that are sent via Livelink).<br>
+Neurosync<br> (Used for making Blenshapes that are sent via Livelink).<br>
 Download the model from Hugging Face and put it in<br>
 Gem-AI-System-2.0\Neurosync\NeuroSync_Local_API\utils\model<br>
+https://huggingface.co/convaitech/NEUROSYNC/tree/main<br>
 
 StyleTTS2:<br>
 Download and install eSpeak NG<br>
