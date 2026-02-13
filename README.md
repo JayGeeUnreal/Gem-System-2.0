@@ -15,7 +15,6 @@ OSC(In Unreal)	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;10000/chat/message<br>
 Vision Service		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5001/sca<br>
 			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5001/get_image<br>
 NeurosyncLocalAPI	9000<br>
-	End point	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5000<br>
 Watcher/Neurosync	11111(Send to Unreal Engine)<br>
 Listen (Ears)		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5000 (sends to)<br>
 Chat Interceptor	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;14300 (ssn_chat_saver.py)<br>
