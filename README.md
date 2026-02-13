@@ -33,7 +33,7 @@ Go into Gem-AI-System-2.0
 
 Start an Anaconda Prompt
 
-Run (example)
+Run (example)<br>
 conda create --name mcp_env_1 python=3.10 -y<br>
 conda activate  mcp_env_1<br>
 Cd into (Example)
