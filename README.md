@@ -23,7 +23,7 @@ Chat Interceptor	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;14300 (ssn_chat_saver.py)<br>
 Install Social Stream Ninja<br>
 Cuda Toolkit - https://developer.nvidia.com/cuda-downloads<br>
 ________________________________________________________________________________
-Make a folder for example 
+Make a folder for example <br>
 C:\Users\jorge\Documents\AI\Gem_2_0
 
 Go into the folder and run
@@ -35,52 +35,42 @@ Start an Anaconda Prompt
 
 Run (example)
 conda create --name mcp_env_1 python=3.10 -y
-conda activate  mcp_env_1
+conda activate  mcp_env_1<br>
 Cd into (Example)
 C:\Users\jorge\Documents\AI\Gem_2_0\Gem-AI-System-2.0
 
-Use nvcc –version to get the cuda version you have installed.
-# Then go to https://pytorch.org/get-started/locally/ to get the command to run.
+Use nvcc –version to get the cuda version you have installed.<br>
+Then go to https://pytorch.org/get-started/locally/ to get the command to run.<br>
 For me I run
 pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu130 
 
 Run
-pip install requirements.txt
-or
-conda env create -f mcp_env_1.yml
+pip install requirements.txt<br>
+or<br>
+conda env create -f mcp_env_1.yml<br>
 
 
-Neurosync
-Download the model from Hugging Face and put it in
-Gem-AI-System-2.0\Neurosync\NeuroSync_Local_API\utils\model
+Neurosync<br>
+Download the model from Hugging Face and put it in<br>
+Gem-AI-System-2.0\Neurosync\NeuroSync_Local_API\utils\model<br>
 
-StyleTTS2:
-Download and install eSpeak NG
-https://github.om/espeak-ng/releases
-Set enviroment variables
-PHONEMIZER_ESPEAK_PATH = C:\Program Files\eSpeak NG
-PHONEMIZER_ESPEAK_LIBRARY =  C:\Program Files\eSpeak NG\libespeak-ng.dll
-Environment variable TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD
+StyleTTS2:<br>
+Download and install eSpeak NG<br>
+https://github.om/espeak-ng/releases<br>
+Set enviroment variables<br>
+PHONEMIZER_ESPEAK_PATH = C:\Program Files\eSpeak NG<br>
+PHONEMIZER_ESPEAK_LIBRARY =  C:\Program Files\eSpeak NG\libespeak-ng.dll<br>
+Environment variable TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD<br>
 
-Download Gradio demo files to YOUR_PATH\Gem-AI-System-2.0\StyleTTS2 (Not needed..)
-https://huggingface.co/spaces/styletts2/styletts2/tree/main
-ljspeechimportable.py
-styletts2importable.py
+Download Gradio demo files to YOUR_PATH\Gem-AI-System-2.0\StyleTTS2 (Not needed..)<br>
+https://huggingface.co/spaces/styletts2/styletts2/tree/main<br>
+ljspeechimportable.py<br>
+styletts2importable.py<br>
 app.py
 
-LuxTTS
-To get GPU acceleration you need to run the following
-Make sure PyTorch version matches the CUDA version installed on your system
-    1. conda install cudatoolkit cudnn -c conda-forge -y
-    2. conda install -c pytorch pytorch
+LuxTTS<br>
+To get GPU acceleration you need to run the following<br>
+Make sure PyTorch version matches the CUDA version <br>installed on your system
+    1. conda install cudatoolkit cudnn -c <br>conda-forge -y<br>
+    2. conda install -c pytorch pytorch<br>
     3. pip install git+https://github.com/k2-fsa/k2
-
-
-
-To Come :
-
-Need to update the Gemini method since they changed some things... There is a warning but it can be ignored for now.....
-
-Need to bug test more
-
-Need to write new documentation
