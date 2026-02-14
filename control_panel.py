@@ -27,7 +27,11 @@ TEST_TONE_FREQUENCY = 440
 INI_FILE_PATH = "mcp_settings.ini"
 DROPDOWN_SECTION = "MCP"
 DROPDOWN_KEY = "llm_choice"
-DROPDOWN_OPTIONS = ["gemini", "ollama", "ollama_vision", "minitron"]
+
+# --- UPDATED: Added 'lm_studio' to the options list ---
+DROPDOWN_OPTIONS = ["gemini", "ollama", "ollama_vision", "minitron", "lm_studio"]
+# -----------------------------------------------------
+
 SENSITIVE_KEYS = ["api_key", "session_id"]
 
 class AudioApp(tk.Tk):
@@ -704,8 +708,16 @@ class AudioApp(tk.Tk):
         self.ini_entries.clear()
         self.sensitive_values.clear()
         
-        # Updated mapping to include LuxTTS in the default scrollable frame
-        section_container_map = { 'VisionService': self.vision_ini_container, 'NeurosyncLocalAPI': self.neurosync_api_scrollable_frame, 'Neurosync': self.neurosync_main_scrollable_frame, 'Watcher': self.neurosync_main_scrollable_frame, 'LiveLink': self.neurosync_main_scrollable_frame, 'LuxTTS': self.scrollable_frame }
+        # Updated mapping to include StyleTTS
+        section_container_map = { 
+            'VisionService': self.vision_ini_container, 
+            'NeurosyncLocalAPI': self.neurosync_api_scrollable_frame, 
+            'Neurosync': self.neurosync_main_scrollable_frame, 
+            'Watcher': self.neurosync_main_scrollable_frame, 
+            'LiveLink': self.neurosync_main_scrollable_frame, 
+            'LuxTTS': self.scrollable_frame,
+            'StyleTTS': self.scrollable_frame 
+        }
         
         default_container = self.scrollable_frame
         for section in self.config.sections():
@@ -714,26 +726,65 @@ class AudioApp(tk.Tk):
             if not parent_container: continue
             self.ini_entries[section] = {}
             section_frame = ttk.LabelFrame(parent_container, text=section, padding=10)
+            
             for key, value in self.config.items(section):
                 if section == 'VisionService' and key in ('camera_index', 'smol_vlm_model_id'): continue
-                row_frame = ttk.Frame(section_frame); row_frame.pack(fill="x", pady=2, padx=2)
+                
+                row_frame = ttk.Frame(section_frame)
+                row_frame.pack(fill="x", pady=2, padx=2)
                 ttk.Label(row_frame, text=f"{key}:", width=20).pack(side="left", anchor="n", pady=2)
+                
                 widget = None
-                if key in SENSITIVE_KEYS:
+
+                # --- CUSTOM SLIDER FOR STYLETTS VOLUME BOOST ---
+                if section == 'StyleTTS' and key == 'volume_boost':
+                    slider_frame = ttk.Frame(row_frame)
+                    slider_frame.pack(side="left", fill="x", expand=True)
+                    
+                    try:
+                        current_val = float(value)
+                    except ValueError:
+                        current_val = 1.0
+
+                    # Use a DoubleVar so .get() works easily
+                    vol_var = tk.DoubleVar(value=current_val)
+                    
+                    # Label to show the numeric value next to the slider
+                    val_label = ttk.Label(slider_frame, text=f"{current_val:.1f}")
+                    val_label.pack(side="right", padx=(5, 0))
+
+                    def update_label(v, label=val_label):
+                        label.config(text=f"{float(v):.1f}")
+
+                    scale = ttk.Scale(slider_frame, from_=0.0, to=5.0, variable=vol_var, command=update_label)
+                    scale.pack(side="left", fill="x", expand=True)
+                    
+                    # Store the VARIABLE, not the widget, so .get() returns the float
+                    widget = vol_var 
+
+                # --- SENSITIVE DATA HANDLING ---
+                elif key in SENSITIVE_KEYS:
                     widget_frame = ttk.Frame(row_frame); widget_frame.pack(side="left", fill="x", expand=True)
                     widget = ttk.Entry(widget_frame, show="*"); widget.insert(0, value); widget.pack(side="left", fill="x", expand=True)
                     self.sensitive_values[widget] = value
                     toggle_button = ttk.Button(widget_frame, text="Show", width=5)
                     toggle_button.config(command=lambda w=widget, b=toggle_button: self.toggle_sensitive_field(w, b))
                     toggle_button.pack(side="left", padx=(5,0))
+                
+                # --- DROPDOWNS ---
                 elif section == DROPDOWN_SECTION and key == DROPDOWN_KEY:
                     widget = ttk.Combobox(row_frame, values=DROPDOWN_OPTIONS, state="readonly")
                     if value in DROPDOWN_OPTIONS: widget.set(value)
                     widget.pack(side="left", fill="x", expand=True)
+                
+                # --- STANDARD TEXT ENTRIES ---
                 else:
                     widget = ttk.Entry(row_frame); widget.insert(0, value); widget.pack(side="left", fill="x", expand=True)
+                
                 if widget: self.ini_entries[section][key] = widget
+
             if section_frame.winfo_children(): section_frame.pack(fill="x", expand=False, padx=5, pady=5)
+            
         if self.config.has_section('Audio'):
             self.selected_input_device_var.set(self.config.get('Audio', 'selected_input', fallback='None'))
             self.selected_output_device_var.set(self.config.get('Audio', 'selected_output', fallback='None'))
@@ -761,8 +812,22 @@ class AudioApp(tk.Tk):
         
         for section, keys in self.ini_entries.items():
             for key, widget in keys.items():
-                value = widget.get() if widget not in self.sensitive_values else self.sensitive_values.get(widget, widget.get())
-                self.config.set(section, key, value)
+                value = ""
+                
+                # FIX: Check if it's a DoubleVar (Slider) first.
+                # DoubleVar is unhashable, so we cannot check 'if widget in self.sensitive_values'
+                if isinstance(widget, tk.DoubleVar):
+                    value = widget.get()
+                
+                # If it's a standard UI widget (Entry, Combobox)
+                else:
+                    if widget in self.sensitive_values:
+                        value = self.sensitive_values[widget]
+                    else:
+                        value = widget.get()
+
+                # Save to config (must convert to string)
+                self.config.set(section, key, str(value))
                 
         self.config.set('Audio', 'selected_input', self.selected_input_device_var.get())
         self.config.set('Audio', 'selected_output', self.selected_output_device_var.get())

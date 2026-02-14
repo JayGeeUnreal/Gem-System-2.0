@@ -33,6 +33,9 @@ import yt_dlp
 import sounddevice as sd
 import soundfile as sf
 
+# --- NEW: LOCAL LOGGER CONFIG ---
+LOCAL_LOGGER_URL = "http://127.0.0.1:14300/chat"
+
 # --- 1. CONFIGURATION LOADING ---
 # ------------------------------------------------------------------------------
 def load_config():
@@ -71,6 +74,15 @@ def load_config():
         settings['ollama_vision_model'] = config_parser.get('Ollama', 'vision_model', fallback='')
         settings['ollama_embedding_model'] = config_parser.get('Ollama', 'embedding_model', fallback='')
         settings['ollama_api_url'] = config_parser.get('Ollama', 'api_url')
+        
+        # --- NEW: LM STUDIO CONFIG ---
+        # Defaulting to standard LM Studio port 1234
+        if config_parser.has_section('LMStudio'):
+            settings['lm_studio_base_url'] = config_parser.get('LMStudio', 'base_url', fallback='http://localhost:1234/v1')
+        else:
+            settings['lm_studio_base_url'] = 'http://localhost:1234/v1'
+        # -----------------------------
+
         settings['osc_enabled'] = config_parser.getboolean('OSC', 'enabled', fallback=False)
         settings['osc_ip'] = config_parser.get('OSC', 'ip')
         settings['osc_port'] = config_parser.getint('OSC', 'port')
@@ -235,6 +247,9 @@ if config['llm_choice'] == "gemini":
         print(f"MCP INFO: Gemini model '{config['gemini_model']}' loaded.")
     except Exception as e:
         sys.exit(f"MCP FATAL ERROR: Failed to configure Gemini API. Details: {e}")
+elif config['llm_choice'] == "lm_studio":
+    print(f"MCP INFO: Initializing LM Studio Mode.")
+    print(f"MCP INFO: Ensure LM Studio server is running at {config['lm_studio_base_url']}")
 elif config['llm_choice'] in ["ollama", "ollama_vision"]:
     # Run async verification in the event loop at startup
     try:
@@ -258,6 +273,26 @@ def clear_screen():
     if platform.system() == "Windows": os.system('cls')
     else: os.system('clear')
 
+# --- NEW: IMPROVED RELAY FOR LOCAL CHAT LOGGER ---
+async def send_to_local_logger(payload: dict):
+    """Relays a complete data payload to the separate Flask Chat Logger script."""
+    try:
+        async with httpx.AsyncClient(timeout=5) as client:
+            await client.post(LOCAL_LOGGER_URL, json=payload)
+    except Exception as e:
+        print(f"MCP ERROR: Could not forward to local logger: {e}")
+
+async def log_assistant_response(text: str, source_name: str = "MasterControl"):
+    """Constructs a full chat payload for the AI response and sends it to the logger."""
+    payload = {
+        "user": "Gemini",
+        "chatmessage": text,
+        "type": "MCP-AI",
+        "sourceName": source_name,
+        "timestamp": int(datetime.datetime.now().timestamp() * 1000)
+    }
+    await send_to_local_logger(payload)
+
 def get_gemini_embedding(text: str = None, image_base64: str = None) -> list[float]:
     # CPU bound: will run in executor
     if not text: return None
@@ -272,6 +307,21 @@ def get_gemini_embedding(text: str = None, image_base64: str = None) -> list[flo
 
 async def get_embedding(text: str = None, image_base64: str = None) -> list[float]:
     if not text and not image_base64: return None
+    
+    if config['llm_choice'] == 'lm_studio':
+        # LM Studio Embeddings (OpenAI Compatible)
+        try:
+            url = f"{config['lm_studio_base_url']}/embeddings"
+            # LM Studio infers model from what is loaded, but "model" field is required
+            payload = {"model": "local-model", "input": text if text else " "}
+            async with httpx.AsyncClient(timeout=60) as client:
+                response = await client.post(url, json=payload)
+            response.raise_for_status()
+            return response.json()['data'][0]['embedding']
+        except Exception as e:
+            print(f"MCP ERROR: LM Studio embedding failed (Check if embedding model is loaded): {e}")
+            return None
+
     if config['llm_choice'] in ['ollama', 'ollama_vision']:
         model_to_use = config.get('ollama_embedding_model')
         if not model_to_use: return None
@@ -316,7 +366,30 @@ async def ask_llm(user_content: str, image_data_base64: str = None) -> tuple[str
         response_json = None
         system_prompt = config.get('system_prompt', '')
         
-        if config['llm_choice'] in ['ollama_vision', 'ollama']:
+        if config['llm_choice'] == 'lm_studio':
+            # LM Studio / OpenAI Compatible API
+            url = f"{config['lm_studio_base_url']}/chat/completions"
+            messages = [{"role": "system", "content": system_prompt}, {"role": "user", "content": user_content}]
+            # Note: LM Studio usually ignores the model name parameter and uses what is loaded in the GUI
+            payload = {
+                "model": "local-model", 
+                "messages": messages, 
+                "temperature": 0.7, 
+                "stream": False
+            }
+            async with httpx.AsyncClient(timeout=120) as client:
+                response = await client.post(url, json=payload)
+            response.raise_for_status()
+            response_json = response.json()
+            
+            # Extract content from OpenAI format
+            content = response_json['choices'][0]['message']['content'].strip()
+            
+            # LM Studio sometimes provides usage stats, but not always tps directly in the header
+            # We will just return the content
+            return content, perf_data
+
+        elif config['llm_choice'] in ['ollama_vision', 'ollama']:
             model = config['ollama_vision_model'] if config['llm_choice'] == 'ollama_vision' else config['ollama_model']
             user_message = {"role": "user", "content": user_content}
             if image_data_base64: user_message["images"] = [image_data_base64]
@@ -561,6 +634,7 @@ async def handle_music_recognition_task_async():
     await asyncio.gather(
         send_to_tts(resp_text),
         send_to_social_stream(resp_text),
+        log_assistant_response(resp_text, source_name="MusicRec"), # COMPLETE RELAY
         add_chat_to_memory("System", resp_text)
     )
 # ------------------------------------------------------------------------------
@@ -678,15 +752,21 @@ async def update_runtime_setting():
 @app.route('/chat', methods=['POST', 'PUT'])
 async def handle_chat_request():
     data = await request.get_json()
-    chat_message = data.get('chatmessage', '')
+    chat_message = data.get('chatmessage', '') or data.get('message', '')
+    
+    # 1. RELAY COMPLETE ORIGINAL DATA TO LOGGER
+    await send_to_local_logger(data)
+    
     print(f"\nMCP: Received [Chat]: '{chat_message}'")
     
     final_response = await process_task(source='chat', user_text=chat_message)
     
     if final_response:
+        # 2. SEND COMPLETE AI PAYLOAD TO LOGGER
         await asyncio.gather(
             send_to_tts(final_response),
             send_to_social_stream(final_response),
+            log_assistant_response(final_response, source_name="ChatAPI"), 
             add_chat_to_memory("Gem", final_response)
         )
         
@@ -695,17 +775,39 @@ async def handle_chat_request():
 @app.route('/vision', methods=['POST'])
 async def handle_vision_request():
     data = await request.get_json()
-    final_response = await process_task(source='vision', user_text=data.get('text', ''), vision_context=data.get('vision_context', ''))
+    user_text = data.get('text', '') or data.get('chatmessage', '')
+    
+    # 1. RELAY COMPLETE ORIGINAL DATA TO LOGGER
+    await send_to_local_logger(data)
+    
+    final_response = await process_task(source='vision', user_text=user_text, vision_context=data.get('vision_context', ''))
     if final_response:
-        await asyncio.gather(send_to_tts(final_response), send_to_social_stream(final_response), add_chat_to_memory("Gem", final_response))
+        # 2. SEND COMPLETE AI PAYLOAD TO LOGGER
+        await asyncio.gather(
+            send_to_tts(final_response), 
+            send_to_social_stream(final_response), 
+            log_assistant_response(final_response, source_name="VisionAPI"),
+            add_chat_to_memory("Gem", final_response)
+        )
     return jsonify({'response': final_response})
     
 @app.route('/audio', methods=['POST'])
 async def handle_audio_request():
     data = await request.get_json()
-    final_response = await process_task(source='audio', user_text=data.get('text', ''))
+    user_text = data.get('text', '') or data.get('chatmessage', '')
+    
+    # 1. RELAY COMPLETE ORIGINAL DATA TO LOGGER
+    await send_to_local_logger(data)
+    
+    final_response = await process_task(source='audio', user_text=user_text)
     if final_response:
-        await asyncio.gather(send_to_tts(final_response), send_to_social_stream(final_response), add_chat_to_memory("Gem", final_response))
+        # 2. SEND COMPLETE AI PAYLOAD TO LOGGER
+        await asyncio.gather(
+            send_to_tts(final_response), 
+            send_to_social_stream(final_response), 
+            log_assistant_response(final_response, source_name="AudioAPI"),
+            add_chat_to_memory("Gem", final_response)
+        )
     return jsonify({'response': final_response})
 
 @app.route('/update_vision', methods=['POST'])

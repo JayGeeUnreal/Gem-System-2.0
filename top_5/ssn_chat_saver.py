@@ -53,6 +53,9 @@ PROCESSED_IDS = deque(maxlen=100)
 LEADERBOARD_SCORES = Counter()
 SHIT_TALKER_SCORES = Counter()
 
+USERNAMES_FILE = 'collected_usernames.txt'
+COLLECTED_USERS = set() # Keeps track of users in memory to avoid duplicates in the file
+
 # --- DEFAULTS ---
 DEFAULT_MENTIONS = [["Rabbit", "bunny"], ["Cool"], ["GG", "wp"]]
 DEFAULT_TALKERS = [["trash", "bad"], ["noob"], ["lag"]]
@@ -289,6 +292,28 @@ async def receive_chat():
                 if ignore_txt.lower() in user.lower() or ignore_txt.lower() in clean_msg.lower():
                      print(f"Ignored message from {user} due to filter: {ignore_txt}")
                      return jsonify({"status": "ignored_filter"}), 200
+
+            # =========================================================
+            # --- NEW: SAVE USERNAME STARTING WITH @ ---
+            # =========================================================
+            try:
+                # We strip potential existing @ just in case, then add it back
+                clean_user = user.lstrip('@')
+                
+                # Only save if we haven't seen this user in this session
+                if clean_user not in COLLECTED_USERS:
+                    COLLECTED_USERS.add(clean_user)
+                    
+                    # Form the line: @Username
+                    user_line = f"@{clean_user}\n"
+                    
+                    # Save to the text file
+                    async with aiofiles.open(USERNAMES_FILE, mode='a', encoding='utf-8') as f_users:
+                        await f_users.write(user_line)
+                        print(f"   >>> SAVED NEW USER: {user_line.strip()}")
+            except Exception as e:
+                print(f"Error saving username: {e}")
+            # =========================================================
 
             total_post_count += 1
             
